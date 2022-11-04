@@ -22,7 +22,8 @@ int valN() {
 	return 0;
 }
 
-Mat createKernel(int n, double sigma) {
+// Creacion del kernel gaussiano
+Mat createGaussKernel(int n, double sigma) {
 	double r, s = 2.0 * sigma * sigma;
 	Mat kernel(n, n, CV_64FC1);
 
@@ -48,6 +49,7 @@ Mat createKernel(int n, double sigma) {
 	return kernel;
 }
 
+// Creacion del relleno de los bordes
 Mat padding(Mat img, int width, int height) {
 	Mat tmp;
 	img.convertTo(tmp, CV_64FC1);
@@ -62,10 +64,11 @@ Mat padding(Mat img, int width, int height) {
 	return padded_image;
 }
 
+// Aplicacion del kernel gaussiano a la imagen
 void gauss(Mat& image, Mat& imgSmooth, int n, double sigma) {
 	Mat kernel;
 
-	kernel = createKernel(n, sigma);
+	kernel = createGaussKernel(n, sigma);
 	imgSmooth = padding(imgSmooth, n, n);
 
 	cout << "\nImagen Suavizada:" << endl << "\tfilas: " << imgSmooth.rows << "\tcolumnas : " << imgSmooth.cols << endl;
@@ -84,6 +87,7 @@ void gauss(Mat& image, Mat& imgSmooth, int n, double sigma) {
 	cout << "\nImagen Suavizada:" << endl << "\tfilas: " << imgSmooth.rows << "\tcolumnas : " << imgSmooth.cols << endl;
 }
 
+// Iniciacion de la suavizacion
 void promptGaussian(Mat image, Mat imgGrey) {
 	double sigma = 0.0;
 	int n = valN();
@@ -106,13 +110,12 @@ int main(int argc, const char* argv[]) {
 		cout << "Error al cargar la imagen: " << NombreImagen << endl;
 		exit(1);
 	}
-
-	/*--------------------------Fin de la imagen lena.png y sus atributos--------------------*/
-
 	// Mostrado e imprenta del tamano de la imagen original
 	namedWindow("Original", WINDOW_AUTOSIZE);
 	imshow("Original", image);
 	cout << "Imagen original:" << endl << "\tfilas: " << image.rows << "\tcolumnas : " << image.cols << endl;
+	/*--------------------------Fin de la imagen lena.png y sus atributos--------------------*/
+
 
 	/*--------------------Obtencion de la escala de grises por promedio--------------------*/
 	Mat channels[3];
@@ -123,12 +126,12 @@ int main(int argc, const char* argv[]) {
 
 	Mat imgNTSC;
 	cv::merge(tempNTSC, imgNTSC);
-	/*--------------------------Fin de la escala de grises por promedio--------------------*/
-
 	// Mostrado e imprenta del tamano de la imagen en escala de grises
 	namedWindow("Escala de grises", WINDOW_AUTOSIZE);
 	imshow("Escala de grises", imgNTSC);
 	cout << "Imagen escala de grises:" << endl << "\tfilas: " << imgNTSC.rows << "\tcolumnas : " << imgNTSC.cols << endl;
+	/*--------------------------Fin de la escala de grises por promedio--------------------*/
+
 
 	// Llamada a la funcion para el proceso de suavizar la imagen
 	promptGaussian(image, imgNTSC);
